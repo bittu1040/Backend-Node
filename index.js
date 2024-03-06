@@ -37,8 +37,8 @@ const userSchema = new mongoose.Schema({
     gender: {
         type: String,
     }
-
-})
+   },
+   { timestamps: true })
 
 const User = mongoose.model('user', userSchema)
 
@@ -56,15 +56,23 @@ app.use((req, res, next) => {
 
 // routes
 
-app.get("/users", (req, res) => {
+app.get("/users",  async (req, res) => {
+    const allDBUsers= await User.find({});
+
+    // uncomment this once you need html as response and you hit api in browser, not in postman
     const html = `
     <ul>
-        ${users.map(user => `<li>${user.first_name} ${user.last_name}</li>`).join('')}
+        ${allDBUsers.map(user => `<li>${user.first_name} ${user.last_name}</li>`).join('')}
     </ul>
     `
     res.send(html)
+
+    // in postman hit:
+    // return res.json(allDBUsers)
 })
 
+
+// to create new users
 app.post("/api/users", async (req, res) => {
     const user = req.body;
     if (!user.first_name || !user.last_name || !user.email) {
