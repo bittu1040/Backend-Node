@@ -44,17 +44,21 @@ const User = mongoose.model('user', userSchema)
 
 
 
-// middleware - plugin
+/* ---------------- middleware - plugin------------------- */
 app.use(express.urlencoded({ extended: false }))
 
 app.use((req, res, next) => {
     // console.log("Hello from middleware");
-    fs.appendFile("log.txt", `\n${Date.now()}: ${req.ip} ${req.method} ${req.path}`, (err, data) => {
+    fs.appendFile("log.txt", `\n${new Date().toLocaleString()}: ${req.ip} ${req.method} ${req.path}`, (err, data) => {
         next();
     })
 })
 
-// routes
+
+/* ------------------------ routes --------------------------- */
+
+
+
 
 app.get("/users",  async (req, res) => {
     const allDBUsers= await User.find({});
@@ -71,8 +75,7 @@ app.get("/users",  async (req, res) => {
     // return res.json(allDBUsers)
 })
 
-
-// to create new users
+/*------------------ api to create user--------------- */
 app.post("/api/users", async (req, res) => {
     const user = req.body;
     if (!user.first_name || !user.last_name || !user.email) {
@@ -95,15 +98,7 @@ app.post("/api/users", async (req, res) => {
 })
 
 
-app.get("/api/users", (req, res) => {
-    return res.json(users);
-})
 
-app.get("/api/users/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    const user = users.find(user => user.id === id);
-    return res.json(user);
-})
 
 
 app.listen(port, function () {
