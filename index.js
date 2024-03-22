@@ -48,7 +48,6 @@ const User = mongoose.model('user', userSchema)
 app.use(express.urlencoded({ extended: false }))
 
 app.use((req, res, next) => {
-    // console.log("Hello from middleware");
     fs.appendFile("log.txt", `\n${new Date().toLocaleString()}: ${req.ip} ${req.method} ${req.path}`, (err, data) => {
         next();
     })
@@ -64,15 +63,15 @@ app.get("/users",  async (req, res) => {
     const allDBUsers= await User.find({});
 
     // uncomment this once you need html as response and you hit api in browser, not in postman
-    const html = `
-    <ul>
-        ${allDBUsers.map(user => `<li>${user.first_name} ${user.last_name}</li>`).join('')}
-    </ul>
-    `
-    res.send(html)
+    // const html = `
+    // <ul>
+    //     ${allDBUsers.map(user => `<li>${user.first_name} ${user.last_name}</li>`).join('')}
+    // </ul>
+    // `
+    // res.send(html)
 
     // in postman hit:
-    // return res.json(allDBUsers)
+    return res.json(allDBUsers)
 })
 
 /*------------------ api to create user--------------- */
