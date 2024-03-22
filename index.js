@@ -5,13 +5,14 @@ const port = 8000;
 const fs = require('fs')
 const mongoose = require('mongoose');
 
-
-
+// bittu1040
+// cnSDoVH5TlTSnPap
 
 
 
 // mongodb connection
-mongoose.connect('mongodb://127.0.0.1:27017/firstDB').then(() => {
+// mongoose.connect('mongodb://127.0.0.1:27017/firstDB').then(() => {
+    mongoose.connect('mongodb+srv://bittu1040:cnSDoVH5TlTSnPap@test-node.ex0ov2a.mongodb.net/?retryWrites=true&w=majority&appName=test-node').then(() => {
     console.log("mongodb connected");
 }).catch((err) => {
     console.log("mongodb error", err);
@@ -58,19 +59,9 @@ app.use((req, res, next) => {
 
 
 
-
+/*------------------ api to get all user--------------- */
 app.get("/users",  async (req, res) => {
     const allDBUsers= await User.find({});
-
-    // uncomment this once you need html as response and you hit api in browser, not in postman
-    // const html = `
-    // <ul>
-    //     ${allDBUsers.map(user => `<li>${user.first_name} ${user.last_name}</li>`).join('')}
-    // </ul>
-    // `
-    // res.send(html)
-
-    // in postman hit:
     return res.json(allDBUsers)
 })
 
