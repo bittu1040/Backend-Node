@@ -57,10 +57,13 @@ app.use((req, res, next) => {
 
 /* ------------------------ routes --------------------------- */
 
+app.get("/", (req, res)=>{
+    res.json({message: "hello from express"})
+})
 
 
 /*------------------ api to get all user--------------- */
-app.get("/users",  async (req, res) => {
+app.get("/api/users",  async (req, res) => {
     const allDBUsers= await User.find({});
     return res.json(allDBUsers)
 })
