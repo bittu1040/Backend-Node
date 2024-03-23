@@ -63,7 +63,7 @@ app.get("/", (req, res)=>{
 
 
 /*------------------ api to get all user--------------- */
-app.get("/api/users",  async (req, res) => {
+app.get("/users",  async (req, res) => {
     const allDBUsers= await User.find({});
     return res.json(allDBUsers)
 })
