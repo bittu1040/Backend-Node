@@ -90,6 +90,25 @@ app.post("/api/users", async (req, res) => {
     }
 })
 
+app.get('/get_image_info', (req, res) => {
+    // Example image path and description
+    const imagesInfo = [
+        {
+            image_path: 'https://i.postimg.cc/wTDQxChr/carbon-1.png',
+            description: 'A beautiful sunset over the mountains.'
+        },
+        {
+            image_path: 'https://i.postimg.cc/wTDQxChr/carbon-1.png',
+            description: 'A serene forest with tall trees.'
+        },
+        {
+            image_path: 'https://i.postimg.cc/wTDQxChr/carbon-1.png',
+            description: 'A tranquil beach with golden sands.'
+        }
+    ];
+    res.json(imagesInfo);
+});
+
 
 
 
