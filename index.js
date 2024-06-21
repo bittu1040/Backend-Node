@@ -94,16 +94,28 @@ app.get('/get_image_info', (req, res) => {
     // Example image path and description
     const imagesInfo = [
         {
-            image_path: 'https://i.postimg.cc/wTDQxChr/carbon-1.png',
-            description: 'A beautiful sunset over the mountains.'
+            id: '1',
+            author: 'John Doe',
+            width: 1920,
+            height: 1080,
+            url: 'https://i.postimg.cc/wTDQxChr/carbon-1.png',
+            download_url: 'https://i.postimg.cc/wTDQxChr/carbon-1.png'
         },
         {
-            image_path: 'https://i.postimg.cc/wTDQxChr/carbon-1.png',
-            description: 'A serene forest with tall trees.'
+            id: '2',
+            author: 'Jane Smith',
+            width: 1920,
+            height: 1080,
+            url: 'https://i.postimg.cc/wTDQxChr/carbon-1.png',
+            download_url: 'https://i.postimg.cc/wTDQxChr/carbon-1.png'
         },
         {
-            image_path: 'https://i.postimg.cc/wTDQxChr/carbon-1.png',
-            description: 'A tranquil beach with golden sands.'
+            id: '3',
+            author: 'Emily Johnson',
+            width: 1920,
+            height: 1080,
+            url: 'https://i.postimg.cc/wTDQxChr/carbon-1.png',
+            download_url: 'https://i.postimg.cc/wTDQxChr/carbon-1.png'
         }
     ];
     res.json(imagesInfo);
