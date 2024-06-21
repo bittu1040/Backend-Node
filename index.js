@@ -4,6 +4,8 @@ const app = express();
 const port = 8000;
 const fs = require('fs')
 const mongoose = require('mongoose');
+const cors = require('cors');
+
 
 // bittu1040
 // cnSDoVH5TlTSnPap
@@ -42,6 +44,9 @@ const userSchema = new mongoose.Schema({
    { timestamps: true })
 
 const User = mongoose.model('user', userSchema)
+
+
+app.use(cors());
 
 
 
