@@ -1,5 +1,6 @@
 const express = require("express");
-const users = require('./MOCK_DATA.json')
+const users = require('./MOCK_DATA.json');
+const imagesInfo= require('./image_data.json');
 const app = express();
 const port = 8000;
 const fs = require('fs')
@@ -97,33 +98,8 @@ app.post("/api/users", async (req, res) => {
 
 app.get('/get_image_info', (req, res) => {
     // Example image path and description
-    const imagesInfo = [
-        {
-            id: '1',
-            author: 'John Doe',
-            width: 1920,
-            height: 1080,
-            url: 'https://i.postimg.cc/wTDQxChr/carbon-1.png',
-            download_url: 'https://i.postimg.cc/wTDQxChr/carbon-1.png'
-        },
-        {
-            id: '2',
-            author: 'Jane Smith',
-            width: 1920,
-            height: 1080,
-            url: 'https://i.postimg.cc/wTDQxChr/carbon-1.png',
-            download_url: 'https://i.postimg.cc/wTDQxChr/carbon-1.png'
-        },
-        {
-            id: '3',
-            author: 'Emily Johnson',
-            width: 1920,
-            height: 1080,
-            url: 'https://i.postimg.cc/wTDQxChr/carbon-1.png',
-            download_url: 'https://i.postimg.cc/wTDQxChr/carbon-1.png'
-        }
-    ];
-    res.json(imagesInfo);
+    const imagesInfo1= imagesInfo
+    res.json(imagesInfo1);
 });
 
 
