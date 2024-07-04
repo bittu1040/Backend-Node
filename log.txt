@@ -30,3 +30,8 @@
 7/1/2024, 1:36:04 PM: ::1 POST /users/createUser
 7/1/2024, 1:37:11 PM: ::1 POST /users/createUser
 7/1/2024, 1:38:01 PM: ::1 POST /users/createUser
+7/4/2024, 10:04:57 PM: ::1 GET /get_image_info
+7/4/2024, 10:05:26 PM: ::1 GET /api/issues
+7/4/2024, 10:07:20 PM: ::1 POST /api/issues
+7/4/2024, 10:07:25 PM: ::1 POST /api/issues
+7/4/2024, 10:07:32 PM: ::1 GET /api/issues
