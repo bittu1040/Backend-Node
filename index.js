@@ -74,6 +74,15 @@ app.post('/api/postIssue', async (req, res) => {
   }
 });
 
+app.delete('/api/deleteIssue/:id', async (req, res) => {
+  try {
+    const deletedIssue = await Issue.findByIdAndDelete(req.params.id);
+    res.json(deletedIssue);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+})
+
 app.listen(port, function () {
   console.log(`Server is running on port: ${port}`);
 });
