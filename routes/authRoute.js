@@ -6,6 +6,12 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+const generateTokens = (user) => {
+  const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  const refreshToken = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
+  return { accessToken, refreshToken };
+};
+
 // REGISTER
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
@@ -36,10 +42,28 @@ router.post("/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.json({ token });
+    const { accessToken, refreshToken } = generateTokens(user);
+    res.json({ accessToken, refreshToken });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+// REFRESH TOKEN
+router.post("/refresh-token", async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) return res.status(401).json({ message: "Refresh token is required" });
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(401).json({ message: "Invalid refresh token" });
+
+    const { accessToken, newRefreshToken } = generateTokens(user);
+    res.json({ accessToken, refreshToken: newRefreshToken });
+  } catch (error) {
+    res.status(401).json({ message: "Invalid refresh token" });
   }
 });
 
