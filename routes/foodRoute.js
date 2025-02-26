@@ -9,6 +9,12 @@ router.post("/add", authMiddleware, async (req, res) => {
   const { name, quantity } = req.body;
 
   try {
+
+    const foodCount = await Food.countDocuments({ user: req.user.id });
+    if (foodCount >= 100) {
+      return res.status(400).json({ message: "Maximum limit is 100, delete any one to add new food" });
+    }
+    
     const newFood = new Food({
       user: req.user.id,
       name,
