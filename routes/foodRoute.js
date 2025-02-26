@@ -6,13 +6,13 @@ const router = express.Router();
 
 // Add Food
 router.post("/add", authMiddleware, async (req, res) => {
-  const { name, calories } = req.body;
+  const { name, quantity } = req.body;
 
   try {
     const newFood = new Food({
       user: req.user.id,
       name,
-      calories,
+      quantity,
     });
 
     const food = await newFood.save();
