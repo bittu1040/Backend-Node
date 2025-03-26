@@ -52,3 +52,32 @@ A simple authentication API using Node.js, Express, MongoDB (Cloud), and JWT.
   - createdAt: 2025-02-19T01:34:43.497Z
   - updatedAt: 2025-02-19T01:34:43.497Z
   - __v: 0
+ 
+### Refresh Token
+
+- **URL:** https://backend-node-kappa.vercel.app/api/auth/refresh-token
+- **Method:** POST
+- **Request Body:**
+  - refreshToken: your_refresh_token_here
+- **Response:**
+  - accessToken: new_access_token_here
+  - refreshToken: new_refresh_token_here
+- **Error Responses:**
+  - 401 Unauthorized: 
+    - ```json
+      {
+        "message": "Refresh token is required"
+      }
+      ```
+    - ```json
+      {
+        "message": "Invalid refresh token"
+      }
+      ```
+  - 500 Internal Server Error:
+    - ```json
+      {
+        "message": "Server error",
+        "error": "Detailed error message"
+      }
+      ```
