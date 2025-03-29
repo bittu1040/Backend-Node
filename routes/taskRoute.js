@@ -52,6 +52,25 @@ router.patch("/done/:id", authMiddleware, async (req, res) => {
   }
 });
 
+// ➤ Mark Task as Not Done
+router.patch("/notdone/:id", authMiddleware, async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
+    if (task.user.toString() !== req.user.id)
+      return res.status(401).json({ message: "Not authorized" });
+
+    task.done = false; // Mark as not done
+    await task.save();
+    res.json({ message: "Task marked as not done", task });
+  } catch (error) {
+    console.error("Mark Task as Not Done Error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 // ➤ Delete Task
 router.delete("/delete/:id", authMiddleware, async (req, res) => {
   try {
