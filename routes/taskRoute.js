@@ -33,9 +33,19 @@ router.get("/list", authMiddleware, async (req, res) => {
   }
 });
 
-// ➤ Mark Task as Done
+// ➤ Mark Task as Done or Not Done
 router.patch("/done/:id", authMiddleware, async (req, res) => {
   try {
+    const { done } = req.body;
+
+    if (done === undefined) {
+      return res.status(400).json({ message: "Missing 'done' field in request body" });
+    }
+
+    if (typeof done !== "boolean") {
+      return res.status(400).json({ message: "'done must be a boolean (true or false)" });
+    }
+
     const task = await Task.findById(req.params.id);
 
     if (!task) return res.status(404).json({ message: "Task not found" });
@@ -43,30 +53,12 @@ router.patch("/done/:id", authMiddleware, async (req, res) => {
     if (task.user.toString() !== req.user.id)
       return res.status(401).json({ message: "Not authorized" });
 
-    task.done = true; // Mark as done
+    task.done = done;
     await task.save();
-    res.json({ message: "Task marked as done", task });
+
+    res.json({ message: `Task marked as ${done ? "done" : "not done"}`, task });
   } catch (error) {
-    console.error("Mark Task as Done Error:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-});
-
-// ➤ Mark Task as Not Done
-router.patch("/notdone/:id", authMiddleware, async (req, res) => {
-  try {
-    const task = await Task.findById(req.params.id);
-
-    if (!task) return res.status(404).json({ message: "Task not found" });
-
-    if (task.user.toString() !== req.user.id)
-      return res.status(401).json({ message: "Not authorized" });
-
-    task.done = false; // Mark as not done
-    await task.save();
-    res.json({ message: "Task marked as not done", task });
-  } catch (error) {
-    console.error("Mark Task as Not Done Error:", error);
+    console.error("Update Task Status Error:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
