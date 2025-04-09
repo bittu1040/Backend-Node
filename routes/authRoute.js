@@ -61,7 +61,7 @@ router.post("/refresh-token", async (req, res) => {
     const user = await User.findById(decoded.id);
     if (!user) return res.status(401).json({ message: "Invalid refresh token" });
 
-    const { accessToken, newRefreshToken } = generateTokens(user);
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
     res.json({ accessToken, refreshToken: newRefreshToken });
   } catch (error) {
     res.status(401).json({ message: "Invalid refresh token" });
