@@ -81,4 +81,22 @@ router.delete("/delete/:id", authMiddleware, async (req, res) => {
   }
 });
 
+router.get("/stats", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const totalTasks = await Task.countDocuments({ user: userId });
+    const doneTasks = await Task.countDocuments({ user: userId, done: true });
+    const pendingTasks = await Task.countDocuments({ user: userId, done: false });
+
+    res.json({
+      total: totalTasks,
+      done: doneTasks,
+      pending: pendingTasks,
+    });
+  } catch (error) {
+    console.error("Task Statistics Error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 module.exports = router;
