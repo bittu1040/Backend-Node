@@ -16,7 +16,7 @@ connectDB();
 app.use(express.json());
 app.use(cors());
 
-// app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/food", foodRoutes);
 app.use("/api/food-preferences", foodPreferencesRoute);
 app.use("/api/task", taskRoutes);
