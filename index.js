@@ -7,6 +7,7 @@ const foodRoutes = require("./routes/foodRoute");
 const foodPreferencesRoute = require("./routes/foodPreferencesRoute");
 const taskRoutes = require("./routes/taskRoute");
 const testRoute = require("./routes/testRoute");
+const profileRoute = require("./routes/profileRoute");
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/food", foodRoutes);
 app.use("/api/food-preferences", foodPreferencesRoute);
 app.use("/api/task", taskRoutes);
+app.use("/api/v1", profileRoute);
 app.use("/api", testRoute);
 
 const PORT = process.env.PORT || 5000;

@@ -1,11 +1,11 @@
 const express = require("express");
-const authMiddleware = require("../middleware/authMiddleware");
+const { verifySupabaseToken } = require("../middleware/supabaseAuthMiddleware");
 const Task = require("../models/Task");
 
 const router = express.Router();
 
 // ➤ Add Task
-router.post("/add", authMiddleware, async (req, res) => {
+router.post("/add", verifySupabaseToken, async (req, res) => {
   const { title } = req.body;
 
   try {
@@ -23,7 +23,7 @@ router.post("/add", authMiddleware, async (req, res) => {
 });
 
 // ➤ List All Tasks
-router.get("/list", authMiddleware, async (req, res) => {
+router.get("/list", verifySupabaseToken, async (req, res) => {
   try {
     const tasks = await Task.find({ user: req.user.id }).sort({ date: -1 });
     res.json(tasks);
@@ -34,7 +34,7 @@ router.get("/list", authMiddleware, async (req, res) => {
 });
 
 // ➤ Mark Task as Done or Not Done
-router.patch("/done/:id", authMiddleware, async (req, res) => {
+router.patch("/done/:id", verifySupabaseToken, async (req, res) => {
   try {
     const { done } = req.body;
 
@@ -64,7 +64,7 @@ router.patch("/done/:id", authMiddleware, async (req, res) => {
 });
 
 // ➤ Delete Task
-router.delete("/delete/:id", authMiddleware, async (req, res) => {
+router.delete("/delete/:id", verifySupabaseToken, async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
 
@@ -81,7 +81,7 @@ router.delete("/delete/:id", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/stats", authMiddleware, async (req, res) => {
+router.get("/stats", verifySupabaseToken, async (req, res) => {
   try {
     const userId = req.user.id;
     const totalTasks = await Task.countDocuments({ user: userId });
