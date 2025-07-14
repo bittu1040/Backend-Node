@@ -1,3 +1,4 @@
+/*
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -79,3 +80,6 @@ router.get("/profile", authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+
+
+*/
