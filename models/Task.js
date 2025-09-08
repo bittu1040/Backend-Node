@@ -12,7 +12,11 @@ const TaskSchema = new mongoose.Schema({
   },
   done: {
     type: Boolean,
-    default: false, // Default to not done
+    default: false,
+  },
+  dueDate: {
+    type: Date,
+    required: false, // Optional field
   },
   date: {
     type: Date,
