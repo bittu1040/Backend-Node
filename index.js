@@ -16,13 +16,15 @@ connectDB();
 // ---- CORS FIRST (before any routes/middleware) ----
 const allowedOrigins = [
   "http://localhost:4200",
-  "https://backend-node-kappa.vercel.app"
+  "https://backend-node-kappa.vercel.app",
+  "https://daily-tasks-tracker.vercel.app"  // Add your deployed frontend URL
 ];
 
 const corsOptions = {
   origin: (origin, cb) => {
+    console.log("CORS Origin Attempt:", origin); // Debug logging
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    return cb(new Error("Not allowed by CORS"));
+    return cb(new Error("Not allowed by CORS - Origin: " + origin));
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: [
@@ -31,7 +33,7 @@ const corsOptions = {
     "apikey",
     "x-client-info"
   ],
-  credentials: true, // set true only if you actually use cookies
+  credentials: true,
   optionsSuccessStatus: 204
 };
 
@@ -47,7 +49,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/food", foodRoutes);
 app.use("/api/food-preferences", foodPreferencesRoute);
-app.use("/api/task", taskRoutes);        // e.g. GET /api/task/stats
+app.use("/api/task", taskRoutes);
 app.use("/api/v1", profileRoute);
 app.use("/api", testRoute);
 
