@@ -163,4 +163,37 @@ router.get("/stats", verifySupabaseToken, async (req, res) => {
   }
 });
 
+// POST /api/task/import
+router.post("/import", verifySupabaseToken, async (req, res) => {
+  try {
+    const { tasks } = req.body;
+    
+    if (!Array.isArray(tasks)) {
+      return res.status(400).json({ message: "Tasks must be an array" });
+    }
+
+    const validTasks = tasks.filter(task => 
+      task && task.title && typeof task.title === 'string'
+    );
+
+    // Bulk insert tasks
+    const tasksToInsert = validTasks.map(task => ({
+      user: req.user.id,
+      title: task.title.trim(),
+      dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+      done: task.done || false
+    }));
+
+    const insertedTasks = await Task.insertMany(tasksToInsert);
+    
+    res.json({
+      message: "Tasks imported successfully",
+      imported: insertedTasks.length
+    });
+  } catch (error) {
+    console.error("Import Tasks Error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 module.exports = router;
