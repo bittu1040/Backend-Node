@@ -163,36 +163,83 @@ router.get("/stats", verifySupabaseToken, async (req, res) => {
   }
 });
 
-// POST /api/task/import
-router.post("/import", verifySupabaseToken, async (req, res) => {
+// GET /api/task/export - Export all tasks as JSON file
+router.get('/export', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    // Get all tasks for the user
+    const tasks = await Task.find({ user: userId })
+      .select('title done dueDate createdAt')
+      .sort({ createdAt: -1 });
+
+    // Set headers for file download
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', 'attachment; filename="tasks.json"');
+    
+    // Send tasks as JSON response
+    res.status(200).json(tasks);
+
+  } catch (error) {
+    console.error('Export tasks error:', error);
+    res.status(500).json({ 
+      message: 'Failed to export tasks',
+      error: error.message
+    });
+  }
+});
+
+// POST /api/task/import - Bulk import tasks
+router.post('/import', authenticate, async (req, res) => {
   try {
     const { tasks } = req.body;
-    
-    if (!Array.isArray(tasks)) {
-      return res.status(400).json({ message: "Tasks must be an array" });
+    const userId = req.user.id;
+
+    // Validate input
+    if (!Array.isArray(tasks) || tasks.length === 0) {
+      return res.status(400).json({ 
+        message: 'Invalid request. Expected an array of tasks.' 
+      });
     }
 
-    const validTasks = tasks.filter(task => 
-      task && task.title && typeof task.title === 'string'
-    );
+    // Validate and prepare tasks for insertion
+    const validTasks = tasks
+      .filter(task => {
+        return task && 
+               typeof task.title === 'string' && 
+               task.title.trim().length > 0;
+      })
+      .map(task => ({
+        title: task.title.trim(),
+        dueDate: task.dueDate && task.dueDate !== "1223-12-12T00:00:00.000Z" 
+          ? new Date(task.dueDate) 
+          : null,
+        done: Boolean(task.done || false),
+        user: userId,
+        createdAt: new Date()
+      }));
 
-    // Bulk insert tasks
-    const tasksToInsert = validTasks.map(task => ({
-      user: req.user.id,
-      title: task.title.trim(),
-      dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
-      done: task.done || false
-    }));
+    if (validTasks.length === 0) {
+      return res.status(400).json({ 
+        message: 'No valid tasks found to import.' 
+      });
+    }
 
-    const insertedTasks = await Task.insertMany(tasksToInsert);
-    
-    res.json({
-      message: "Tasks imported successfully",
-      imported: insertedTasks.length
+    // Bulk insert all tasks at once
+    const insertedTasks = await Task.insertMany(validTasks);
+
+    res.status(201).json({
+      message: `Successfully imported ${insertedTasks.length} tasks.`,
+      imported: insertedTasks.length,
+      tasks: insertedTasks
     });
+
   } catch (error) {
-    console.error("Import Tasks Error:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error('Import tasks error:', error);
+    res.status(500).json({ 
+      message: 'Failed to import tasks',
+      error: error.message
+    });
   }
 });
 
