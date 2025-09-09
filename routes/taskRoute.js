@@ -2,6 +2,9 @@ const express = require("express");
 const { verifySupabaseToken } = require("../middleware/supabaseAuthMiddleware");
 const Task = require("../models/Task");
 
+const TaskSummaryService = require('../services/taskSummaryService');
+const taskSummaryService = new TaskSummaryService();
+
 const router = express.Router();
 
 // ➤ Add Task
@@ -239,6 +242,43 @@ router.post('/import', verifySupabaseToken, async (req, res) => {
     res.status(500).json({ 
       message: 'Failed to import tasks',
       error: error.message
+    });
+  }
+});
+
+router.post("/summary", verifySupabaseToken, async (req, res) => {
+  try {
+    const tasks = await Task.find({ user: req.user.id }).sort({ date: -1 });
+    
+    if (tasks.length === 0) {
+      return res.json({
+        success: true,
+        summary: "No tasks found to summarize.",
+        task_count: 0
+      });
+    }
+
+    const result = await taskSummaryService.generateSummary(tasks);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        summary: result.summary,
+        task_count: result.task_count,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+
+  } catch (error) {
+    console.error("Task Summary Error:", error);
+    res.status(500).json({ 
+      message: "Server error", 
+      error: error.message 
     });
   }
 });
