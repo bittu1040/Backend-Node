@@ -13,16 +13,14 @@ dotenv.config();
 const app = express();
 connectDB();
 
-// ---- CORS FIRST (before any routes/middleware) ----
 const allowedOrigins = [
   "http://localhost:4200",
   "https://backend-node-kappa.vercel.app",
-  "https://daily-tasks-tracker.vercel.app"  // Add your deployed frontend URL
+  "https://daily-tasks-tracker.vercel.app"
 ];
 
 const corsOptions = {
   origin: (origin, cb) => {
-    console.log("CORS Origin Attempt:", origin); // Debug logging
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
     return cb(new Error("Not allowed by CORS - Origin: " + origin));
   },
@@ -38,11 +36,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// Handle preflight explicitly
-app.options("*", cors(corsOptions));
-
-// ---------------------------------------------------
-
 app.use(express.json());
 
 // routes
@@ -53,7 +46,7 @@ app.use("/api/task", taskRoutes);
 app.use("/api/v1", profileRoute);
 app.use("/api", testRoute);
 
-// optional: health check
+// health check
 app.get("/health", (_req, res) => res.status(200).send("ok"));
 
 const PORT = process.env.PORT || 5000;
