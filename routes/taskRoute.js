@@ -164,7 +164,7 @@ router.get("/stats", verifySupabaseToken, async (req, res) => {
 });
 
 // GET /api/task/export - Export all tasks as JSON file
-router.get('/export', authenticate, async (req, res) => {
+router.get('/export', verifySupabaseToken, async (req, res) => {
   try {
     const userId = req.user.id;
     
@@ -190,7 +190,7 @@ router.get('/export', authenticate, async (req, res) => {
 });
 
 // POST /api/task/import - Bulk import tasks
-router.post('/import', authenticate, async (req, res) => {
+router.post('/import', verifySupabaseToken, async (req, res) => {
   try {
     const { tasks } = req.body;
     const userId = req.user.id;
