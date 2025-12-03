@@ -4,7 +4,7 @@ class TaskSummaryService {
     constructor() {
         const apiKey = process.env.GEMINI_API_KEY || "AIzaSyCGJDWiogRyMjvg4prfOPCi3bLWWpKf-UI";
         this.genAI = new GoogleGenerativeAI(apiKey);
-        this.model = this.genAI.getGenerativeModel({ model: "x-ai/grok-4.1-fast:free" });
+        this.model = this.genAI.getGenerativeModel({ model: "google/gemini-2.0-flash-exp:free" });
     }
 
     formatTasks(tasks) {
