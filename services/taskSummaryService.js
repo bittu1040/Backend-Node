@@ -1,10 +1,9 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const OpenAI = require("openai");
 
 class TaskSummaryService {
     constructor() {
-        const apiKey = process.env.GEMINI_API_KEY || "AIzaSyCGJDWiogRyMjvg4prfOPCi3bLWWpKf-UI";
-        this.genAI = new GoogleGenerativeAI(apiKey);
-        this.model = this.genAI.getGenerativeModel({ model: "google/gemini-2.0-flash-exp:free" });
+        const apiKey = process.env.OPENAI_API_KEY;
+        this.openai = new OpenAI({ apiKey });
     }
 
     formatTasks(tasks) {
@@ -36,8 +35,17 @@ ${formattedTasks}
 
 Provide a concise summary covering: total tasks, priorities, upcoming deadlines, and any urgent items. Keep it short and actionable.`;
 
-            const result = await this.model.generateContent(prompt);
-            const summary = result.response.text().trim();
+            const completion = await this.openai.chat.completions.create({
+                model: "gpt-3.5-turbo",
+                messages: [
+                    { role: "system", content: "You are a helpful assistant that generates concise task summaries." },
+                    { role: "user", content: prompt }
+                ],
+                max_tokens: 150,
+                temperature: 0.7
+            });
+            
+            const summary = completion.choices[0].message.content.trim();
             
             return {
                 success: true,
@@ -48,6 +56,8 @@ Provide a concise summary covering: total tasks, priorities, upcoming deadlines,
             let userMessage = "Error generating summary. Please try again later.";
             if (error.message && error.message.includes("429 Too Many Requests")) {
                 userMessage = "You have reached the daily limit for summary generation. Please try again tomorrow or check your API quota.";
+            } else if (error.status === 401) {
+                userMessage = "Invalid API key. Please check your OpenAI API configuration.";
             }
             return {
                 success: false,
