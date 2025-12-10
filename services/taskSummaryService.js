@@ -54,6 +54,7 @@ Provide a concise summary covering: total tasks, priorities, upcoming deadlines,
             };
         } catch (error) {
             let userMessage = "Error generating summary. Please try again later.";
+console.log('error', error);
             if (error.message && error.message.includes("429 Too Many Requests")) {
                 userMessage = "You have reached the daily limit for summary generation. Please try again tomorrow or check your API quota.";
             } else if (error.status === 401) {
