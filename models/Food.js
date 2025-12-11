@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const FoodSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   name: {
@@ -20,4 +20,5 @@ const FoodSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Food", FoodSchema);
+const Food = mongoose.model('Food', FoodSchema);
+export default Food;

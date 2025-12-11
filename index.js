@@ -1,17 +1,17 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const cors = require("cors");
-const connectDB = require("./config/db");
-const authRoutes = require("./routes/authRoute");
-const foodRoutes = require("./routes/foodRoute");
-const foodPreferencesRoute = require("./routes/foodPreferencesRoute");
-const taskRoutes = require("./routes/taskRoute");
-const testRoute = require("./routes/testRoute");
-const profileRoute = require("./routes/profileRoute");
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import connectDB from './config/db.js';
+import authRoutes from './routes/authRoute.js';
+import foodRoutes from './routes/foodRoute.js';
+import foodPreferencesRoute from './routes/foodPreferencesRoute.js';
+import taskRoutes from './routes/taskRoute.js';
+import testRoute from './routes/testRoute.js';
+import profileRoute from './routes/profileRoute.js';
 
 dotenv.config();
 const app = express();
-connectDB();
+await connectDB();
 
 const allowedOrigins = [
   "http://localhost:4200",
@@ -39,12 +39,12 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // routes
-app.use("/api/auth", authRoutes);
-app.use("/api/food", foodRoutes);
-app.use("/api/food-preferences", foodPreferencesRoute);
-app.use("/api/task", taskRoutes);
-app.use("/api/v1", profileRoute);
-app.use("/api", testRoute);
+app.use('/api/auth', authRoutes);
+app.use('/api/food', foodRoutes);
+app.use('/api/food-preferences', foodPreferencesRoute);
+app.use('/api/task', taskRoutes);
+app.use('/api/v1', profileRoute);
+app.use('/api', testRoute);
 
 // health check
 app.get("/health", (_req, res) => res.status(200).send("ok"));

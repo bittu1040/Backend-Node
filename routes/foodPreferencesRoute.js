@@ -1,7 +1,7 @@
-const express = require("express");
+import express from 'express';
 const router = express.Router();
-const authMiddleware = require("../middleware/authMiddleware"); 
-const FoodPreference = require("../models/FoodPreference"); 
+import authMiddleware from '../middleware/authMiddleware.js';
+import FoodPreference from '../models/FoodPreference.js';
 
 
 // ➤ Add a new food preference
@@ -40,4 +40,4 @@ router.delete("/delete/:id", authMiddleware, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,19 +1,21 @@
-const { createClient } = require('@supabase/supabase-js');
-const User = require('../models/user');
-require('dotenv').config();
+import { createClient } from '@supabase/supabase-js';
+import User from '../models/user.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY  // store this in .env
+  process.env.SUPABASE_SERVICE_ROLE_KEY // store this in .env
 );
- 
-exports.verifySupabaseToken = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Missing token" });
+
+export const verifySupabaseToken = async (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Missing token' });
 
   const { data, error } = await supabase.auth.getUser(token);
-  console.log("Supabase Auth Data:", data);
-  if (error || !data?.user) return res.status(401).json({ error: "Invalid token" });
+  console.log('Supabase Auth Data:', data);
+  if (error || !data?.user) return res.status(401).json({ error: 'Invalid token' });
 
   const supabaseId = data.user.id;
   const email = data.user.email;

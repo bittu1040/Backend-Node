@@ -1,10 +1,9 @@
-const express = require("express");
-const { verifySupabaseToken } = require("../middleware/supabaseAuthMiddleware");
-const Task = require("../models/Task");
+import express from 'express';
+import { verifySupabaseToken } from '../middleware/supabaseAuthMiddleware.js';
+import Task from '../models/Task.js';
+import TaskSummaryService from '../services/taskSummaryService.js';
 
-const TaskSummaryService = require('../services/taskSummaryService');
 const taskSummaryService = new TaskSummaryService();
-
 const router = express.Router();
 
 // ➤ Add Task
@@ -283,4 +282,4 @@ router.post("/summary", verifySupabaseToken, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

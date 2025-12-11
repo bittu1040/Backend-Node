@@ -1,9 +1,10 @@
-const express = require("express");
-const router = express.Router();
-const { verifySupabaseToken } = require("../middleware/supabaseAuthMiddleware");
+import express from 'express';
+import { verifySupabaseToken } from '../middleware/supabaseAuthMiddleware.js';
 
-router.get("/profile", verifySupabaseToken, (req, res) => {
+const router = express.Router();
+
+router.get('/profile', verifySupabaseToken, (req, res) => {
   res.json({ user: req.user });
 });
 
-module.exports = router;
+export default router;

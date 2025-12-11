@@ -1,6 +1,6 @@
-const express = require("express");
-const authMiddleware = require("../middleware/authMiddleware");
-const Food = require("../models/Food");
+import express from 'express';
+import authMiddleware from '../middleware/authMiddleware.js';
+import Food from '../models/Food.js';
 
 const router = express.Router();
 
@@ -58,4 +58,4 @@ router.get("/list", authMiddleware, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

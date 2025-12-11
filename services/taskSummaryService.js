@@ -1,9 +1,17 @@
-const OpenAI = require("openai");
+import dotenv from 'dotenv';
+import OpenAI from 'openai';
+
+dotenv.config();
 
 class TaskSummaryService {
     constructor() {
         const apiKey = process.env.OPENAI_API_KEY;
-        this.openai = new OpenAI({ apiKey });
+        if (!apiKey) {
+            console.warn('TaskSummaryService: OPENAI_API_KEY is not set. Summary generation will be disabled.');
+            this.openai = null;
+        } else {
+            this.openai = new OpenAI({ apiKey });
+        }
     }
 
     formatTasks(tasks) {
@@ -35,8 +43,15 @@ ${formattedTasks}
 
 Provide a concise summary covering: total tasks, priorities, upcoming deadlines, and any urgent items. Keep it short and actionable.`;
 
+            if (!this.openai) {
+                return {
+                    success: false,
+                    error: 'Missing OpenAI API key. Please set OPENAI_API_KEY in your environment.'
+                };
+            }
+
             const completion = await this.openai.chat.completions.create({
-                model: "gpt-3.5-turbo",
+                model: "gpt-4.1-mini",
                 messages: [
                     { role: "system", content: "You are a helpful assistant that generates concise task summaries." },
                     { role: "user", content: prompt }
@@ -44,28 +59,36 @@ Provide a concise summary covering: total tasks, priorities, upcoming deadlines,
                 max_tokens: 150,
                 temperature: 0.7
             });
-            
-            const summary = completion.choices[0].message.content.trim();
-            
+
+            const summary = completion.choices?.[0]?.message?.content?.trim() || '';
+
             return {
                 success: true,
-                summary: summary,
+                summary,
                 task_count: tasks.length
             };
         } catch (error) {
-            let userMessage = "Error generating summary. Please try again later.";
-console.log('error', error);
-            if (error.message && error.message.includes("429 Too Many Requests")) {
-                userMessage = "You have reached the daily limit for summary generation. Please try again tomorrow or check your API quota.";
-            } else if (error.status === 401) {
-                userMessage = "Invalid API key. Please check your OpenAI API configuration.";
+            const msg = error?.message || String(error);
+            console.error('TaskSummaryService.generateSummary error:', error);
+
+            let userMessage = 'Error generating summary. Please try again later.';
+
+            const status = error?.response?.status || error?.status || null;
+
+            if (status === 429 || /too many requests|rate limit|429/i.test(msg)) {
+                userMessage = 'API limit reached. Please wait and try again later.';
             }
-            return {
-                success: false,
-                error: userMessage
-            };
+            else if (status === 401 || /unauthorized|invalid api key|401/i.test(msg)) {
+                userMessage = 'Invalid API key. Please check your OpenAI API configuration.';
+            }
+
+            const result = { success: false, error: userMessage };
+            if (process.env.NODE_ENV !== 'production') {
+                result.debug = { message: msg, status };
+            }
+            return result;
         }
     }
 }
 
-module.exports = TaskSummaryService;
+export default TaskSummaryService;

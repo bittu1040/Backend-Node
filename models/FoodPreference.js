@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const FoodPreferenceSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   name: {
@@ -16,4 +16,5 @@ const FoodPreferenceSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("FoodPreference", FoodPreferenceSchema);
+const FoodPreference = mongoose.model('FoodPreference', FoodPreferenceSchema);
+export default FoodPreference;
