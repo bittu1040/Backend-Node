@@ -1,16 +1,15 @@
 import dotenv from 'dotenv';
-import OpenAI from 'openai';
 
 dotenv.config();
 
 class TaskSummaryService {
     constructor() {
-        const apiKey = process.env.OPENAI_API_KEY;
+        const apiKey = process.env.OPENROUTER_API_KEY;
         if (!apiKey) {
-            console.warn('TaskSummaryService: OPENAI_API_KEY is not set. Summary generation will be disabled.');
-            this.openai = null;
+            console.warn('TaskSummaryService: OPENROUTER_API_KEY is not set. Summary generation will be disabled.');
+            this.apiKey = null;
         } else {
-            this.openai = new OpenAI({ apiKey });
+            this.apiKey = apiKey;
         }
     }
 
@@ -43,24 +42,44 @@ ${formattedTasks}
 
 Provide a concise summary covering: total tasks, priorities, upcoming deadlines, and any urgent items. Keep it short and actionable.`;
 
-            if (!this.openai) {
+            if (!this.apiKey) {
                 return {
                     success: false,
-                    error: 'Missing OpenAI API key. Please set OPENAI_API_KEY in your environment.'
+                    error: 'Missing OpenRouter API key. Please set OPENROUTER_API_KEY in your environment.'
                 };
             }
 
-            const completion = await this.openai.chat.completions.create({
-                model: "gpt-4.1-mini",
-                messages: [
-                    { role: "system", content: "You are a helpful assistant that generates concise task summaries." },
-                    { role: "user", content: prompt }
-                ],
-                max_tokens: 150,
-                temperature: 0.7
+            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.apiKey}`,
+                    'HTTP-Referer': process.env.APP_URL || 'http://localhost',
+                    'X-Title': 'Task Summary Service'
+                },
+                body: JSON.stringify({
+                    model: "openai/gpt-4-turbo",
+                    messages: [
+                        { role: "system", content: "You are a helpful assistant that generates concise task summaries." },
+                        { role: "user", content: prompt }
+                    ],
+                    max_tokens: 150,
+                    temperature: 0.7
+                })
             });
 
-            const summary = completion.choices?.[0]?.message?.content?.trim() || '';
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const status = response.status;
+                throw {
+                    status,
+                    message: errorData.error?.message || `HTTP ${status}`,
+                    response: errorData
+                };
+            }
+
+            const data = await response.json();
+            const summary = data.choices?.[0]?.message?.content?.trim() || '';
 
             return {
                 success: true,
@@ -73,13 +92,13 @@ Provide a concise summary covering: total tasks, priorities, upcoming deadlines,
 
             let userMessage = 'Error generating summary. Please try again later.';
 
-            const status = error?.response?.status || error?.status || null;
+            const status = error?.status || null;
 
             if (status === 429 || /too many requests|rate limit|429/i.test(msg)) {
                 userMessage = 'API limit reached. Please wait and try again later.';
             }
             else if (status === 401 || /unauthorized|invalid api key|401/i.test(msg)) {
-                userMessage = 'Invalid API key. Please check your OpenAI API configuration.';
+                userMessage = 'Invalid API key. Please check your OpenRouter API configuration.';
             }
 
             const result = { success: false, error: userMessage };
